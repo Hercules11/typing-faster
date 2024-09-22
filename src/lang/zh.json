@@ -1,0 +1,30 @@
+{
+    "cates": {
+        "junior-high-school": "初中词汇",
+        "senior-high-school": "高中词汇",
+        "cet-4": "大学英语四级",
+        "cet-6": "大学英语六级",
+        "graduate-record-exam": "考研词汇",
+        "toefl": "托福词汇",
+        "sat": "美国高考"
+    },
+    "unit": {
+        "seconds": "秒",
+        "min": "分钟",
+        "words": "词",
+        "chars": "字母",
+        "accuracy": "准确率",
+        "wpm": "词/分钟"
+    },
+    "subtile": "打字速度测试",
+    "title": "测试你的打字技能",
+    "show": "显示全球分数排行",
+    "hide": "隐藏全球分数排行",
+    "scores": "全球分数",
+    "chart": "分布直方图",
+    "tips": "开始输入",
+    "modal-title": "测试完成",
+    "prompts1": "你的打字速度是 {words} 词/分钟 ({chars} 字/分钟). ",
+    "prompts2": "你的准确率是 {accuracy}%. 还有待提高!",
+    "prompts3": "你的准确率是 {accuracy}%. 这真的非常棒!"
+}

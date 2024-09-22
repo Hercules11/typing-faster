@@ -1,0 +1,16 @@
+@import './base.css';
+
+#app {}
+
+:where(.css-dev-only-do-not-override-18u6xxi).ant-select-dropdown .ant-select-item-option-content:hover {
+    text-overflow: inherit;
+}
+
+:where(.css-dev-only-do-not-override-18u6xxi).ant-btn-primary {
+    background-color: #1677ff;
+    ;
+}
+
+:where(.css-dev-only-do-not-override-18u6xxi).ant-btn-primary:not(:disabled):hover {
+    background-color: #4096ff;
+}

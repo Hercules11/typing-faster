@@ -1,0 +1,30 @@
+{
+    "cates": {
+        "junior-high-school": "junior-high-school",
+        "senior-high-school": "senior-high-school",
+        "cet-4": "cet-4",
+        "cet-6": "cet-6",
+        "graduate-record-exam": "graduate-record-exam",
+        "toefl": "toefl",
+        "sat": "sat"
+    },
+    "unit": {
+        "seconds": "seconds",
+        "min": "min",
+        "words": "words",
+        "chars": "chars",
+        "accuracy": "accuracy",
+        "wpm": "WPM"
+    },
+    "subtile": "Typing Speed Test",
+    "title": "Test your typing skills",
+    "show": "Show global scores",
+    "hide": "Hide global scores",
+    "scores": "Global scores",
+    "chart": "Histogram of results",
+    "tips": "Start typing",
+    "modal-title": "Test finish",
+    "prompts1": "Well... You type with the speed of {words} WPM ({chars} CPM). ",
+    "prompts2": "Your accuracy was {accuracy}%. It could be better!",
+    "prompts3": "Your accuracy was {accuracy}%. It is very good!"
+}
