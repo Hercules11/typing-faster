@@ -112,6 +112,7 @@ onMounted(() => {
 .container {
   max-width: 72.5rem;
   height: 100vh;
+  margin: auto;
 }
 .content {
   border: 0 solid #d4d4d7;
