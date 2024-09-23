@@ -2,15 +2,22 @@
 
 #app {}
 
-:where(.css-dev-only-do-not-override-18u6xxi).ant-select-dropdown .ant-select-item-option-content:hover {
+.ant-select-dropdown .ant-select-item-option-content:hover {
     text-overflow: inherit;
 }
 
-:where(.css-dev-only-do-not-override-18u6xxi).ant-btn-primary {
-    background-color: #1677ff;
-    ;
-}
+.custom-dialogue {
+    .ant-btn-primary {
+        color: #333;
+    }
 
-:where(.css-dev-only-do-not-override-18u6xxi).ant-btn-primary:not(:disabled):hover {
-    background-color: #4096ff;
+    .ant-btn-default:not(:disabled):hover,
+    .ant-btn-default:not(:disabled):active {
+        color: #333;
+    }
+
+    .ant-btn-primary:not(:disabled):hover,
+    .ant-btn-primary:not(:disabled):active {
+        color: #333;
+    }
 }

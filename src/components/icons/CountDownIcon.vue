@@ -40,7 +40,7 @@ const target = ref()
 watch(
   () => props.enableAnimation,
   (newVal) => {
-    console.log(props.enableAnimation, newVal)
+    // console.log(props.enableAnimation, newVal)
 
     if (newVal) {
       let size = 0
@@ -48,18 +48,30 @@ watch(
       const intervalId = setInterval(() => {
         if (size >= 332) {
           clearInterval(intervalId)
+          return
         }
         size += 332 / 60
         deg -= 6
-        target.value.children[0].style['stroke-dashoffset' as any] = `${size}px`
-        target.value.children[1].style['transform' as any] = `rotate(${deg}deg)`
+        // 确保 target 是 SVGElement 类型
+        const circle = target.value.children[0] as SVGElement
+        const dot = target.value.children[1] as SVGElement
+        // 使用 CSSStyleDeclaration 进行类型标注
+        circle.style.strokeDashoffset = `${size}px`
+        dot.style.transform = `rotate(${deg}deg)`
       }, 1000)
     } else {
       // 恢复初始状态
       // TODO: // 完成后没有立即执行
-      console.log('恢复动画')
-      target.value.children[0].style['stroke-dashoffset' as any] = '0px'
-      target.value.children[1].style['transform' as any] = 'rotate(450deg)'
+      // console.log('恢复动画')
+      // target.value.children[0].style['stroke-dashoffset' as any] = '0px'
+      // target.value.children[1].style['transform' as any] = 'rotate(450deg)'
+      // 确保 target 是 SVGElement 类型
+      const circle = target.value.children[0] as SVGElement
+      const dot = target.value.children[1] as SVGElement
+
+      // 使用 CSSStyleDeclaration 进行类型标注
+      circle.style.strokeDashoffset = '0px'
+      dot.style.transform = 'rotate(450deg)'
     }
   }
 )

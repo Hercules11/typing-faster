@@ -26,5 +26,9 @@
     "modal-title": "Test finish",
     "prompts1": "Well... You type with the speed of {words} WPM ({chars} CPM). ",
     "prompts2": "Your accuracy was {accuracy}%. It could be better!",
-    "prompts3": "Your accuracy was {accuracy}%. It is very good!"
+    "prompts3": "Your accuracy was {accuracy}%. It is very good!",
+    "confirm": "Confirm",
+    "jump-tip": "You are about to open a new page.",
+    "ensure": "ok",
+    "cancel": "cencel"
 }

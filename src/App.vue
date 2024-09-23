@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { GithubFilled } from '@ant-design/icons-vue'
 import TypingArea from './components/TypingArea.vue'
 import GraphicsArea from './components/GraphicsArea.vue'
-import { onMounted, ref, watch } from 'vue'
+import { createVNode, onMounted, ref, watch } from 'vue'
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { loadWordsData } from './utils'
+import Modal from 'ant-design-vue/es/modal/Modal'
 
 const { t, locale } = useI18n()
 const showTrans = ref(true)
@@ -80,6 +83,23 @@ const injectData = async () => {
 }
 onMounted(injectData)
 watch(currentSelect, injectData)
+
+const handleLinkClick = () => {
+  Modal.confirm({
+    title: t('confirm'),
+    icon: createVNode(ExclamationCircleOutlined),
+    content: t('jump-tip'),
+    okText: t('ensure'),
+    cancelText: t('cancel'),
+    centered: true,
+    maskClosable: true,
+    wrapClassName: 'custom-dialogue',
+    onOk() {
+      console.log('跳转')
+      window.open('https://github.com/Hercules11/typing-faster', '_blank', 'noopener,noreferrer')
+    }
+  })
+}
 </script>
 
 <template>
@@ -115,11 +135,30 @@ watch(currentSelect, injectData)
         <TypingArea :data="wordsData" @is-typing="disableSelection" @change-data="shuffleData" />
         <GraphicsArea />
       </div>
+      <div class="feedback" @click="handleLinkClick">
+        <GithubFilled />
+      </div>
     </div>
   </a-config-provider>
 </template>
 
 <style scoped lang="less">
+.feedback {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 4rem;
+}
+@media (max-width: 72rem) {
+  .feedback {
+    font-size: 3rem;
+  }
+}
+@media (max-width: 768px) {
+  .feedback {
+    font-size: 2rem;
+  }
+}
 .background {
   background-image: url('./assets/test-bg-left.webp'), url('./assets/test-bg-right.webp');
   background-size: 393px auto;

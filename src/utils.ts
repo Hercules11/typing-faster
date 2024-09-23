@@ -67,13 +67,8 @@ export async function loadWordsData(cate: string) {
 
 /**
  * 移除字符串内的空白字符
+ * 按照字符匹配的方式去除空格，遇到了平台表现不一致的问题
  */
 export function omitBlankLetter(str: string) {
-  let res = ''
-  for (const w of str) {
-    if (w !== ' ' && w !== '\n') {
-      res += w
-    }
-  }
-  return res
+  return str.replace(/[\s\u00A0]+/g, '')
 }

@@ -39,14 +39,15 @@ const hideStartIndicator = () => {
   }, 1000)
 }
 
+// 加个锁，避免一轮测试之后，未进行初始化就开启新一轮
 const startCountDown = () => {
-  if (counting.value) return
   counting.value = true
   hideStartIndicator()
   intervalId = setInterval(() => {
     if (time.value > 0) {
       time.value--
     } else {
+      input.value.contenteditable = false // 禁用输入
       counting.value = false
       info()
       clearInterval(intervalId)
@@ -70,6 +71,7 @@ const resetAllData = () => {
   input.value.innerHTML = ''
   emit('changeData')
   time.value = 60
+  input.value.contenteditable = true
 }
 const input = ref()
 const focusInput = () => {
@@ -151,7 +153,8 @@ const info = () => {
       )
     ]),
     centered: true,
-    maskClosable: true,
+    wrapClassName: 'custom-dialogue',
+    // maskClosable: true,
     onOk() {
       resetAllData()
       // console.log('ok')
