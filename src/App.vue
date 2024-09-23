@@ -95,7 +95,7 @@ const handleLinkClick = () => {
     maskClosable: true,
     wrapClassName: 'custom-dialogue',
     onOk() {
-      console.log('跳转')
+      // console.log('跳转')
       window.open('https://github.com/Hercules11/typing-faster', '_blank', 'noopener,noreferrer')
     }
   })

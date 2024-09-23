@@ -100,7 +100,7 @@ const currentTarget = ref({
   valid: true
 }) // 存储当前要输入的单词
 const updateContent = (event: any) => {
-  console.log(event)
+  // console.log(event)
   if (!counting.value) startCountDown()
   if (!currentTarget.value.data) {
     currentTarget.value.data = onComing.value[0][0]
