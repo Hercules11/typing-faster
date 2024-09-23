@@ -72,3 +72,8 @@ export async function loadWordsData(cate: string) {
 export function omitBlankLetter(str: string) {
   return str.replace(/[\s\u00A0]+/g, '')
 }
+
+/**
+ * 空格的正则
+ */
+export const regexp = /[\s\u00A0\u3000\u2000-\u200F\u202F\u205F\u3000\uFEFF]/

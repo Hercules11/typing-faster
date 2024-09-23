@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, h, ref, watch, type Ref } from 'vue'
 import { type Word } from '@/types'
-import { matchSourceAndTarget, omitBlankLetter } from '@/utils'
+import { matchSourceAndTarget, omitBlankLetter, regexp } from '@/utils'
 import CountDownIcon from './icons/CountDownIcon.vue'
 import Modal from 'ant-design-vue/es/modal/Modal'
 import { useI18n } from 'vue-i18n'
@@ -100,7 +100,7 @@ const currentTarget = ref({
   valid: true
 }) // 存储当前要输入的单词
 const updateContent = (event: any) => {
-  // console.log(event)
+  console.log(event)
   if (!counting.value) startCountDown()
   if (!currentTarget.value.data) {
     currentTarget.value.data = onComing.value[0][0]
@@ -109,6 +109,7 @@ const updateContent = (event: any) => {
   }
   if (event.inputType === 'insertParagraph') {
     if (event.target.textContent === '') {
+      // 涉及到 br
       event.target.innerHTML = ''
       return
     } else {
@@ -116,9 +117,10 @@ const updateContent = (event: any) => {
       changeCurrentWord(event)
     }
   }
-  if (event.data === ' ') {
-    if (event.target.textContent === ' ') {
-      event.target.textContent === ''
+  // 空格匹配不一定成功，会出问题,采用正则匹配
+  if (regexp.test(event.data)) {
+    if (event.target.textContent.length === 1) {
+      event.target.textContent = ''
       return
     } else {
       // 换词
