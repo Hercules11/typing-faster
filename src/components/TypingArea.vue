@@ -28,7 +28,7 @@ const onComing = ref<[string, string][]>([
   // ['intention', 'n. 打算，意图']
 ])
 
-const time = ref(60)
+const time = ref(6)
 const counting = ref(false)
 const startingIndicator = ref()
 let intervalId: number | undefined = undefined
@@ -47,7 +47,10 @@ const startCountDown = () => {
     if (time.value > 0) {
       time.value--
     } else {
-      input.value.contenteditable = false // 禁用输入
+      console.log(input.value)
+      // html 不区分大小写，所以看到的是contenteditable， 实际上要赋值给 contentEditable 才会生效
+      // html 标签内的属性，应该会自动解析为对应的属性
+      input.value.contentEditable = false // 禁用输入
       counting.value = false
       info()
       clearInterval(intervalId)
@@ -71,7 +74,7 @@ const resetAllData = () => {
   input.value.innerHTML = ''
   emit('changeData')
   time.value = 60
-  input.value.contenteditable = true
+  input.value.contentEditable = true
 }
 const input = ref()
 const focusInput = () => {
@@ -156,6 +159,7 @@ const info = () => {
     ]),
     centered: true,
     wrapClassName: 'custom-dialogue',
+    autoFocusButton: null, // 禁止弹窗后，输入空格就重新启动测试
     // maskClosable: true,
     onOk() {
       resetAllData()
