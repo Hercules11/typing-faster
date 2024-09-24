@@ -28,7 +28,7 @@ const onComing = ref<[string, string][]>([
   // ['intention', 'n. 打算，意图']
 ])
 
-const time = ref(6)
+const time = ref(60)
 const counting = ref(false)
 const startingIndicator = ref()
 let intervalId: number | undefined = undefined
