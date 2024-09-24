@@ -5,7 +5,7 @@ import TypingArea from './components/TypingArea.vue'
 import GraphicsArea from './components/GraphicsArea.vue'
 import { createVNode, onMounted, ref, watch } from 'vue'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
-import { loadWordsData } from './utils'
+import { loadWordsData, replaceBlankWord } from './utils'
 import Modal from 'ant-design-vue/es/modal/Modal'
 
 const { t, locale } = useI18n()
@@ -79,6 +79,10 @@ const injectData = async () => {
   // console.log(random)
   wordsData.value.splice(0, wordsData.value.length) // 响应式丢失
   wordsData.value = words.default.slice(random, random + 180)
+  // 去除可能的空格
+  wordsData.value.forEach((item) => {
+    item[0] = replaceBlankWord(item[0])
+  })
   // console.log(wordsData.value)
 }
 onMounted(injectData)

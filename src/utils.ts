@@ -77,3 +77,13 @@ export function omitBlankLetter(str: string) {
  * 空格的正则
  */
 export const regexp = /[\s\u00A0\u3000\u2000-\u200F\u202F\u205F\u3000\uFEFF]/
+
+/**
+ * 替换单词中间的空格为下划线
+ */
+export function replaceBlankWord(str: string) {
+  if (str.includes(' ')) {
+    str = str.replace(' ', '_')
+  }
+  return str
+}

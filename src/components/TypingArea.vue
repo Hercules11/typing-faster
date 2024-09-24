@@ -434,6 +434,7 @@ watch(
     .input-wrapper {
       width: 50%;
       overflow: hidden;
+      white-space: nowrap;
       .no-wrap {
         float: right;
         white-space: nowrap;
