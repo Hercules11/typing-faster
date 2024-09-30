@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, ref, watch, type Ref } from 'vue'
+import { computed, h, onMounted, ref, watch, type Ref } from 'vue'
 import { type Word } from '@/types'
 import { matchSourceAndTarget, omitBlankLetter, regexp } from '@/utils'
 import CountDownIcon from './icons/CountDownIcon.vue'
@@ -102,14 +102,17 @@ const currentTarget = ref({
   trans: '',
   valid: true
 }) // 存储当前要输入的单词
-const updateContent = (event: any) => {
-  // console.log(event)
-  if (!counting.value) startCountDown()
-  if (!currentTarget.value.data) {
+const initCurrentTargetData = (hasDataAndUpdate: boolean) => {
+  if (hasDataAndUpdate || !currentTarget.value.data) {
     currentTarget.value.data = onComing.value[0][0]
     currentTarget.value.trans = onComing.value[0][1]
     currentTarget.value.valid = true
   }
+}
+const updateContent = (event: any) => {
+  // console.log(event)
+  if (!counting.value) startCountDown()
+  initCurrentTargetData(false)
   if (event.inputType === 'insertParagraph') {
     if (event.target.textContent === '') {
       // 涉及到 br
@@ -179,6 +182,7 @@ watch(
     onComing.value.splice(0, onComing.value.length)
     // NOTE: 数据引用bug, 因为改了数组内部数组数据,导致 props 修改, 进而引发当前组件数据 bug
     onComing.value.push(...props.data)
+    initCurrentTargetData(true)
   }
 )
 watch(
