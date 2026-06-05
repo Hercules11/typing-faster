@@ -251,6 +251,7 @@ watch(
 <style scoped lang="less">
 .error {
   text-decoration: line-through;
+  color: var(--color-typing-error);
 }
 .scores {
   display: flex;
@@ -279,7 +280,8 @@ watch(
         align-items: center;
         margin-bottom: 0.5rem;
 
-        background-color: #fff;
+        background-color: var(--color-surface);
+        box-shadow: 0 8px 20px var(--color-shadow-card);
       }
       @media (max-width: 768px) {
         div:nth-child(1) {
@@ -309,7 +311,8 @@ watch(
     align-items: center;
 
     border-radius: 50%;
-    background-color: #fff;
+    background-color: var(--color-surface);
+    box-shadow: 0 8px 20px var(--color-shadow-card);
 
     div:nth-last-child(2) {
       font-weight: 700;
@@ -344,7 +347,7 @@ watch(
           align-items: center;
           margin-bottom: 0.5rem;
 
-          background-color: #fff;
+          background-color: var(--color-surface);
           font-size: 2.587464rem;
         }
         div:nth-child(2) {
@@ -364,7 +367,7 @@ watch(
       align-items: center;
 
       border-radius: 50%;
-      background-color: #fff;
+      background-color: var(--color-surface);
 
       div:nth-last-child(2) {
         font-weight: 700;
@@ -391,17 +394,25 @@ watch(
   margin-right: auto;
   margin-left: auto;
   border-radius: 0.5rem;
-  background-color: #fff;
+  background-color: var(--color-surface);
   max-width: 68rem;
   box-shadow:
-    0 9px 24px rgba(0, 0, 0, 0.12),
-    0 9px 24px rgba(0, 0, 0, 0.12);
+    0 9px 24px var(--color-shadow-card),
+    0 9px 24px var(--color-shadow-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s,
+    box-shadow 0.3s;
 
   .translation {
     position: absolute;
     left: 50%;
     top: 6rem;
     transform: translateX(-50%);
+    color: var(--color-text-secondary);
   }
 
   .indicator {
@@ -415,13 +426,14 @@ watch(
     padding-top: 0.25rem;
     padding-bottom: 0.125rem;
     border-radius: 0.25rem;
-    background-color: #ffd000;
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   .indicator::after {
     content: '';
     border-style: solid;
     border-width: 7px 5px 0 5px;
-    border-color: #ffd000 transparent transparent transparent;
+    border-color: var(--color-accent) transparent transparent transparent;
     position: absolute;
     top: 100%;
     left: 50%;
@@ -444,13 +456,13 @@ watch(
         white-space: nowrap;
         text-align: right;
         display: flex;
-        color: #ababb0;
+        color: var(--color-text-muted);
         div {
           // Controls the color of the text insertion indicator.
-          caret-color: black;
+          caret-color: var(--color-caret);
           display: inline-block;
           padding-left: 0.25rem;
-          color: #06f;
+          color: var(--color-typing-active);
           outline: none;
         }
       }

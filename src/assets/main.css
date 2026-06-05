@@ -1,23 +1,24 @@
 @import './base.css';
 
-#app {}
+#app {
+}
 
 .ant-select-dropdown .ant-select-item-option-content:hover {
-    text-overflow: inherit;
+  text-overflow: inherit;
 }
 
 .custom-dialogue {
-    .ant-btn-primary {
-        color: #333;
-    }
+  .ant-btn-primary {
+    color: var(--color-accent-text);
+  }
 
-    .ant-btn-default:not(:disabled):hover,
+  /* .ant-btn-default:not(:disabled):hover,
     .ant-btn-default:not(:disabled):active {
-        color: #333;
-    }
+        color: var(--color-accent-text);
+    } */
 
-    .ant-btn-primary:not(:disabled):hover,
-    .ant-btn-primary:not(:disabled):active {
-        color: #333;
-    }
+  .ant-btn-primary:not(:disabled):hover,
+  .ant-btn-primary:not(:disabled):active {
+    color: var(--color-accent-text);
+  }
 }

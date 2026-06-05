@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue'
+import { onMounted, onUnmounted, ref, type Ref } from 'vue'
 import {
   Chart,
   Colors,
@@ -19,20 +19,40 @@ import ArrowIcon from './icons/ArrowIcon.vue'
 
 const isShow = ref(true)
 const area: Ref<HTMLCanvasElement | undefined> = ref()
+let chart: Chart | undefined
+let themeObserver: MutationObserver | undefined
+
+const getThemeColor = (name: string) =>
+  getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+
+const syncChartTheme = () => {
+  if (!chart) return
+
+  chart.data.datasets[0].backgroundColor = getThemeColor('--color-accent')
+  chart.options.color = getThemeColor('--color-text-secondary')
+  chart.options.plugins!.tooltip!.backgroundColor = getThemeColor('--color-chart-tooltip-bg')
+  chart.options.plugins!.tooltip!.titleColor = getThemeColor('--color-chart-tooltip-text')
+  chart.options.plugins!.tooltip!.bodyColor = getThemeColor('--color-chart-tooltip-text')
+  chart.update('none')
+}
 
 onMounted(() => {
-  new Chart(area.value?.getContext('2d')!, {
+  chart = new Chart(area.value?.getContext('2d')!, {
     type: 'bar',
     options: {
       animation: false,
       responsive: true, // 确保响应式
       maintainAspectRatio: false, // 不保持宽高比
+      color: getThemeColor('--color-text-secondary'),
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
           enabled: true,
+          backgroundColor: getThemeColor('--color-chart-tooltip-bg'),
+          titleColor: getThemeColor('--color-chart-tooltip-text'),
+          bodyColor: getThemeColor('--color-chart-tooltip-text'),
           callbacks: {
             title: function (context) {
               // console.log(context)
@@ -75,12 +95,23 @@ onMounted(() => {
       datasets: [
         {
           label: 'count',
-          backgroundColor: '#ffd000',
+          backgroundColor: getThemeColor('--color-accent'),
           data: Object.values(data)
         }
       ]
     }
   })
+
+  themeObserver = new MutationObserver(syncChartTheme)
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+  })
+})
+
+onUnmounted(() => {
+  themeObserver?.disconnect()
+  chart?.destroy()
 })
 </script>
 
@@ -115,13 +146,20 @@ onMounted(() => {
   margin: auto;
 }
 .content {
-  border: 0 solid #d4d4d7;
+  border: 0 solid var(--color-border);
   border-radius: 0.5rem;
   padding: 3rem 0 3rem;
 
   .white-bg {
     padding: 3rem 1rem 2rem;
-    background-color: white;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    color: var(--color-text);
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      color 0.3s;
   }
   @media (min-width: 64rem) {
     .white-bg {
@@ -182,6 +220,7 @@ onMounted(() => {
   font-weight: 400;
   font-size: 1.125rem;
   cursor: pointer;
+  color: var(--color-text);
 
   margin-bottom: 2rem;
 }

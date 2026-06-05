@@ -10,7 +10,7 @@
   >
     <path
       d="M6 10l6 6 6-6"
-      stroke="#22272F"
+      stroke="currentColor"
       stroke-width="2"
       stroke-linecap="round"
       data-reactid=".0.1.2.0.1.0"

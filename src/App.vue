@@ -1,18 +1,51 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { GithubFilled } from '@ant-design/icons-vue'
+import { BulbFilled, BulbOutlined, GithubFilled } from '@ant-design/icons-vue'
 import TypingArea from './components/TypingArea.vue'
 import GraphicsArea from './components/GraphicsArea.vue'
-import { createVNode, onMounted, ref, watch } from 'vue'
+import { computed, createVNode, onMounted, ref, watch } from 'vue'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { loadWordsData, replaceBlankWord } from './utils'
 import Modal from 'ant-design-vue/es/modal/Modal'
+import antTheme from 'ant-design-vue/es/theme'
 
 const { t, locale } = useI18n()
+type ThemeMode = 'light' | 'dark'
+
 const showTrans = ref(true)
 watch(showTrans, () => {
   locale.value = showTrans.value ? 'zh' : 'en'
 })
+
+const getInitialTheme = (): ThemeMode => {
+  const storedTheme = localStorage.getItem('typing-faster-theme')
+  if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+const themeMode = ref<ThemeMode>(getInitialTheme())
+const isDarkTheme = computed(() => themeMode.value === 'dark')
+const appTheme = computed(() => ({
+  algorithm: isDarkTheme.value ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+  token: {
+    colorPrimary: '#ffd000',
+    colorTextLightSolid: '#333333',
+    borderRadius: 8
+  }
+}))
+const toggleTheme = () => {
+  themeMode.value = isDarkTheme.value ? 'light' : 'dark'
+}
+watch(
+  themeMode,
+  () => {
+    document.documentElement.dataset.theme = themeMode.value
+    localStorage.setItem('typing-faster-theme', themeMode.value)
+  },
+  { immediate: true }
+)
+
 const currentSelect = ref('junior-high-school')
 const cates = ref([
   {
@@ -107,15 +140,19 @@ const handleLinkClick = () => {
 </script>
 
 <template>
-  <a-config-provider
-    :theme="{
-      token: {
-        colorPrimary: '#ffd000'
-      }
-    }"
-  >
+  <a-config-provider :theme="appTheme">
     <div class="background">
       <div class="load-data">
+        <button
+          class="theme-toggle"
+          type="button"
+          :aria-label="isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'"
+          :title="isDarkTheme ? 'Light theme' : 'Dark theme'"
+          @click="toggleTheme"
+        >
+          <BulbFilled v-if="isDarkTheme" />
+          <BulbOutlined v-else />
+        </button>
         <div class="chinese">
           <a-switch
             v-model:checked="showTrans"
@@ -152,6 +189,9 @@ const handleLinkClick = () => {
   bottom: 2rem;
   right: 2rem;
   font-size: 4rem;
+  color: var(--color-heading);
+  transition: color 0.3s;
+  text-align: right;
 }
 @media (max-width: 72rem) {
   .feedback {
@@ -164,16 +204,35 @@ const handleLinkClick = () => {
   }
 }
 .background {
-  background-image: url('./assets/test-bg-left.webp'), url('./assets/test-bg-right.webp');
-  background-size: 393px auto;
-  background-position:
-    calc(50% - 650px) 0,
-    calc(50% + 650px) 0;
-  background-repeat: repeat-y;
-  background-color: #f6f6f7;
+  background-color: var(--color-page-background);
+  color: var(--color-text);
 
   padding-top: 3rem;
   position: relative;
+  overflow: hidden;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url('./assets/test-bg-left.webp'), url('./assets/test-bg-right.webp');
+    background-size: 393px auto;
+    background-position:
+      calc(50% - 650px) 0,
+      calc(50% + 650px) 0;
+    background-repeat: repeat-y;
+    opacity: var(--background-art-opacity);
+    filter: var(--background-art-filter);
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 
   .load-data {
     display: flex;
@@ -182,6 +241,29 @@ const handleLinkClick = () => {
     position: absolute;
     top: 1rem;
     right: 1rem;
+
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+      margin-right: 0.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
+      color: var(--color-text);
+      background-color: var(--color-surface);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        background-color 0.3s,
+        border-color 0.3s,
+        color 0.3s;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--color-border-strong);
+      color: var(--color-heading);
+    }
 
     :deep(.ant-select-selection-item):hover {
       text-overflow: inherit;
@@ -193,7 +275,7 @@ const handleLinkClick = () => {
       justify-content: center;
 
       :deep(.ant-switch-inner-checked) {
-        color: #333;
+        color: var(--color-accent-text);
       }
     }
   }
@@ -215,7 +297,7 @@ h6 {
   font-size: 1rem;
   letter-spacing: 0.1rem;
   font-weight: 400;
-  color: #4a4a56;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
 
   margin-top: 0;
@@ -227,6 +309,7 @@ h1 {
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.03em;
+  color: var(--color-heading);
 
   margin-top: 0;
   margin-bottom: 0.5em;

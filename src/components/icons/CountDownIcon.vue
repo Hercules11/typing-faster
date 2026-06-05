@@ -11,7 +11,7 @@
       cy="55"
       r="53"
       fill="none"
-      stroke="#FFD000"
+      stroke="var(--color-accent)"
       stroke-width="4"
       stroke-dasharray="332px"
       style="
@@ -26,7 +26,7 @@
       cx="2"
       cy="55"
       r="2"
-      fill="#FFD000"
+      fill="var(--color-accent)"
       style="transform-origin: 55px 55px 0px; transition: 1s linear; transform: rotate(450deg)"
       data-reactid=".0.1.1.0.0.$=10.2.0.0.0.1"
     ></circle>
