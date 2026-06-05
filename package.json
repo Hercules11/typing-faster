@@ -38,6 +38,6 @@
     "vue-tsc": "^2.0.21"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm build && git add dist/"
+    "pre-commit": "pnpm build  && echo '✅ 编译完成！已自动添加 dist' && git add dist/"
   }
 }
