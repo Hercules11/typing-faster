@@ -80,6 +80,24 @@ describe('TypingArea（打字测速区）', () => {
     expect(inputEl.className).toContain('error')
   })
 
+  it('打字过程只裁剪组件内部的待输入队列，不改写父组件传入的词库数据', async () => {
+    const source: [string, string][] = [
+      ['apple', 'n. 苹果'],
+      ['bee', 'n. 蜜蜂']
+    ]
+    const utils = renderWithI18n(TypingArea, { props: { data: [] as [string, string][] } })
+    await utils.rerender({ data: source })
+
+    // 输入前缀触发"剩余后缀"裁剪
+    await typeIntoInput('ap', 'p')
+    expect(source[0]).toEqual(['apple', 'n. 苹果'])
+
+    // 空格换词后，原始词条依然完整
+    await typeIntoInput('apple', ' ')
+    expect(source[0]).toEqual(['apple', 'n. 苹果'])
+    expect(source[1]).toEqual(['bee', 'n. 蜜蜂'])
+  })
+
   it('空格提交一个完全正确的单词：计入完成区，词数与字母数变为 1 和 5', async () => {
     await mountTypingArea()
     await typeIntoInput('apple', ' ')

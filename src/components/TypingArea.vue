@@ -181,7 +181,11 @@ watch(
     // console.log(props.data)
     onComing.value.splice(0, onComing.value.length)
     // NOTE: 数据引用bug, 因为改了数组内部数组数据,导致 props 修改, 进而引发当前组件数据 bug
-    onComing.value.push(...props.data)
+    // 修复：拷贝词条。打字时会把当前词裁剪成剩余后缀（onComing[0][0] = ...），
+    // 若按引用共享，会把父组件/缓存模块里的原始词库数据一并截断
+    onComing.value.push(
+      ...(props.data as [string, string][]).map((word) => [...word] as [string, string])
+    )
     initCurrentTargetData(true)
   }
 )

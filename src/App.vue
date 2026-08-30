@@ -163,7 +163,7 @@ const handleLinkClick = () => {
         &nbsp;
         <a-select v-model:value="currentSelect" style="width: 200px" :disabled="isDisable">
           <a-select-option v-for="item in cates" :value="item.value" :key="item.value">
-            {{ item.label + (item.length ? `&nbsp;(${item.length})` : '') }}
+            {{ item.label + (item.length ? `\u00A0(${item.length})` : '') }}
           </a-select-option>
         </a-select>
       </div>

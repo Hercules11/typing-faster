@@ -52,8 +52,11 @@ describe('App（整体页面）', () => {
       const comingArea = container.querySelectorAll('.input-wrapper')[1]
       expect(comingArea!.textContent!.length).toBeGreaterThan(100)
     })
-    // 选项会带上词库长度
-    expect(document.querySelector('.ant-select-selection-item')!.textContent).toMatch(/初中词汇/)
+    // 选项会带上词库长度；用真实的 nbsp 分隔而不是字面量 "&nbsp;" 文本
+    const selectionText = document.querySelector('.ant-select-selection-item')!.textContent!
+    expect(selectionText).toMatch(/初中词汇/)
+    expect(selectionText).toContain('\u00A0(3224)')
+    expect(selectionText).not.toContain('&nbsp;')
   })
 
   it('点击灯泡按钮切换主题：data-theme 与 localStorage 同步更新', async () => {
