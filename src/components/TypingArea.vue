@@ -31,7 +31,7 @@ const onComing = ref<[string, string][]>([
 const time = ref(60)
 const counting = ref(false)
 const startingIndicator = ref()
-let intervalId: number | undefined = undefined
+let intervalId: ReturnType<typeof setInterval> | undefined = undefined
 const hideStartIndicator = () => {
   setTimeout(() => {
     startingIndicator.value.style.opacity = 0
