@@ -144,9 +144,16 @@ describe('TypingArea（打字测速区）', () => {
       const inputEl = await typeIntoInput('apple', ' ')
       expect(emitted('changeData')).toBeUndefined()
 
-      await vi.advanceTimersByTimeAsync(61_000)
+      // 走满 59 秒：还剩 1 秒，成绩不应弹出
+      await vi.advanceTimersByTimeAsync(59_000)
+      expect(modalSuccess).not.toHaveBeenCalled()
+      expect(document.querySelector('.count-down div:nth-last-child(2)')!.textContent).toBe('1')
+
+      // 第 60 秒：倒计时归零的同时立即弹出成绩
+      await vi.advanceTimersByTimeAsync(1_000)
       await nextTick()
       expect(modalSuccess).toHaveBeenCalledTimes(1)
+      expect(document.querySelector('.count-down div:nth-last-child(2)')!.textContent).toBe('0')
       // 计时结束：输入被禁用（断言 contentEditable 属性；jsdom 不把它反射到 attribute）
       expect(String(inputEl.contentEditable)).toBe('false')
 

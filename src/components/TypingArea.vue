@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, ref, watch, type Ref } from 'vue'
+import { computed, h, onUnmounted, ref, watch, type Ref } from 'vue'
 import { type Word } from '@/types'
 import { matchSourceAndTarget, omitBlankLetter, regexp } from '@/utils'
 import CountDownIcon from './icons/CountDownIcon.vue'
@@ -44,10 +44,11 @@ const startCountDown = () => {
   counting.value = true
   hideStartIndicator()
   intervalId = setInterval(() => {
-    if (time.value > 0) {
+    if (time.value > 1) {
       time.value--
     } else {
-      console.log(input.value)
+      // 计时走完：显示 0 的同时立即弹成绩，不再多等一个 tick
+      time.value = 0
       // html 不区分大小写，所以看到的是contenteditable， 实际上要赋值给 contentEditable 才会生效
       // html 标签内的属性，应该会自动解析为对应的属性
       input.value.contentEditable = false // 禁用输入
@@ -57,6 +58,11 @@ const startCountDown = () => {
     }
   }, 1000)
 }
+
+onUnmounted(() => {
+  // 组件可能在计时中途被卸载（如路由切换），清理定时器避免空转泄漏
+  if (intervalId !== undefined) clearInterval(intervalId)
+})
 
 const words = computed(() => hasFinished.value.reduce((acc, cur) => acc + (cur.valid ? 1 : 0), 0))
 const chars = computed(() =>

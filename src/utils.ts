@@ -46,6 +46,7 @@ export function matchSourceAndTarget(source: string, target: string): isMatch {
 
 /**
  * 载入单词数据，有本地缓存优先使用
+ * @throws 传入不存在的词库分类时抛出错误（而不是返回 undefined 让调用方崩溃）
  */
 export async function loadWordsData(cate: string) {
   const cachedData = localStorage.getItem(cate)
@@ -62,6 +63,7 @@ export async function loadWordsData(cate: string) {
         return mod
       }
     }
+    throw new Error(`loadWordsData: 未知的词库分类 "${cate}"`)
   }
 }
 
@@ -80,10 +82,11 @@ export const regexp = /[\s\u00A0\u3000\u2000-\u200F\u202F\u205F\u3000\uFEFF]/
 
 /**
  * 替换单词中间的空格为下划线
+ * 按照字符匹配的方式去除空格，遇到了平台表现不一致的问题
+ * 词库中存在含空格的连词（如 "parallel lines"）：
+ * 空格被交互占用（按空格切下一个词），词内分隔符统一用下划线呈现；
+ * 连续多个空格合并为一个下划线，首尾空格直接去除
  */
 export function replaceBlankWord(str: string) {
-  if (str.includes(' ')) {
-    str = str.replace(' ', '_')
-  }
-  return str
+  return str.trim().replace(/[\s\u00A0]+/g, '_')
 }

@@ -109,12 +109,20 @@ describe('replaceBlankWord（词内空格转下划线）', () => {
     expect(replaceBlankWord('ice cream')).toBe('ice_cream')
   })
 
-  it('没有空格时原样返回', () => {
-    expect(replaceBlankWord('apple')).toBe('apple')
+  it('连续多个空格合并为单个下划线', () => {
+    expect(replaceBlankWord('a  b   c')).toBe('a_b_c')
   })
 
-  it('只替换第一个空格（现状行为，SAT 词库存在多空格词条，见 docs/BUGFIXES.md）', () => {
-    expect(replaceBlankWord('a b c')).toBe('a_b c')
+  it('首尾空格直接去除，不产生下划线', () => {
+    expect(replaceBlankWord(' give up ')).toBe('give_up')
+  })
+
+  it('不间断空格（\\u00A0）同样处理', () => {
+    expect(replaceBlankWord('a\u00A0\u00A0b')).toBe('a_b')
+  })
+
+  it('没有空格时原样返回', () => {
+    expect(replaceBlankWord('apple')).toBe('apple')
   })
 })
 
@@ -169,9 +177,8 @@ describe('loadWordsData（词库加载与缓存）', () => {
     expect(mod.default).toEqual([['cached', '缓存词条']])
   })
 
-  it('未知分类返回 undefined（现状：调用方未判空，见 docs/BUGFIXES.md）', async () => {
-    const mod = await loadWordsData('no-such-category')
-    expect(mod).toBeUndefined()
+  it('未知分类抛出明确错误，且不写入缓存', async () => {
+    await expect(loadWordsData('no-such-category')).rejects.toThrow(/未知的词库分类/)
     expect(localStorage.getItem('no-such-category')).toBeNull()
   })
 })
