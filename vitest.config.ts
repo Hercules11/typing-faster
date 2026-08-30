@@ -13,6 +13,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // globals: true 让 @testing-library 在每个用例后自动 cleanup DOM
+    globals: true,
     setupFiles: ['./src/__tests__/setup.ts'],
     include: ['src/**/__tests__/**/*.{test,spec}.ts'],
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
