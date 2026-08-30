@@ -1,0 +1,72 @@
+# CI 模板（未启用）
+#
+# 启用方式：把本文件复制到 .github/workflows/test.yml 即可。
+# 说明：
+# - 本项目把 dist 提交入库作为 GitHub Pages 部署方式，CI 只做校验，不推送 dist。
+# - E2E 使用生产构建 + vite preview，Playwright 在 CI 上自动安装浏览器。
+
+name: Test & Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint (0 warnings)
+        run: pnpm lint:check
+
+      - name: Format check (source files; data/*.json 为历史数据不做重排)
+        run: pnpm prettier --check "src/**/*.{ts,vue}"
+
+      - name: Unit & component tests with coverage
+        run: pnpm test:coverage
+
+      - name: Typecheck + build
+        run: pnpm build
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - name: E2E smoke tests
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

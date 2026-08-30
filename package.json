@@ -60,6 +60,7 @@
     "vue-tsc": "^2.0.21"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm build  && echo '✅ 编译完成！已自动添加 dist' && git add dist/"
-  }
+    "pre-commit": "pnpm lint-staged && pnpm test && pnpm build && echo '✅ lint+测试+编译通过！已自动添加 dist' && git add dist/"
+  },
+  "prepare": "simple-git-hooks"
 }
