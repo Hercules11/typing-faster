@@ -31,9 +31,7 @@ test('打字主流程：输入完整单词后空格换词，词数与字母数�
   const finishedArea = page.locator('.input-wrapper').nth(0)
   await expect(finishedArea.locator('span').first()).toHaveText(firstWord)
   await expect(page.locator('.words-count > div:first-child')).toHaveText('1')
-  await expect(page.locator('.chars-count > div:first-child')).toHaveText(
-    String(firstWord.length)
-  )
+  await expect(page.locator('.chars-count > div:first-child')).toHaveText(String(firstWord.length))
   // 下一个待输入单词变成新词，不再是刚完成的词
   await expect(comingArea.locator('span').first()).not.toHaveText(firstWord)
 })

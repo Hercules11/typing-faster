@@ -5,7 +5,8 @@ import {
   matchSourceAndTarget,
   omitBlankLetter,
   regexp,
-  replaceBlankWord
+  replaceBlankWord,
+  setEndOfContenteditable
 } from '@/utils'
 
 describe('matchSourceAndTarget（打字进度拟合匹配）', () => {
@@ -114,6 +115,32 @@ describe('replaceBlankWord（词内空格转下划线）', () => {
 
   it('只替换第一个空格（现状行为，SAT 词库存在多空格词条，见 docs/BUGFIXES.md）', () => {
     expect(replaceBlankWord('a b c')).toBe('a_b c')
+  })
+})
+
+describe('setEndOfContenteditable（光标移到可编辑元素末尾）', () => {
+  it('把 selection 折叠到元素内容的末尾', () => {
+    const el = document.createElement('div')
+    el.contentEditable = 'true'
+    el.innerHTML = '<span>abc</span>def'
+    document.body.appendChild(el)
+
+    // 先把光标移到开头，再调用工具函数
+    const sel = window.getSelection()!
+    const range = document.createRange()
+    range.setStart(el.firstChild!.firstChild!, 0)
+    range.collapse(true)
+    sel.removeAllRanges()
+    sel.addRange(range)
+    expect(sel.anchorOffset).toBe(0)
+
+    setEndOfContenteditable(el)
+    // collapseToEnd 后光标折叠在容器的所有子节点之后
+    expect(sel.isCollapsed).toBe(true)
+    expect(sel.anchorNode).toBe(el)
+    expect(sel.anchorOffset).toBe(el.childNodes.length)
+
+    el.remove()
   })
 })
 

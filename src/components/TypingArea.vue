@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, h, ref, watch, type Ref } from 'vue'
 import { type Word } from '@/types'
 import { matchSourceAndTarget, omitBlankLetter, regexp } from '@/utils'
 import CountDownIcon from './icons/CountDownIcon.vue'

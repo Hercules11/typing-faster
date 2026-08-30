@@ -28,3 +28,8 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# test artifacts
+test-results
+playwright-report
+coverage
