@@ -12,7 +12,7 @@
       :style="{
         transform: 'rotate(-90deg)',
         transformOrigin: 'center center',
-        transition: isRunning ? '1s linear' : 'none',
+        transition: '1s linear',
         strokeDashoffset: `${dashOffset}px`
       }"
     ></circle>
@@ -24,7 +24,7 @@
       fill="var(--color-accent)"
       :style="{
         transformOrigin: '55px 55px',
-        transition: isRunning ? '1s linear' : 'none',
+        transition: '1s linear',
         transform: `rotate(${dotRotation}deg)`
       }"
     ></circle>
