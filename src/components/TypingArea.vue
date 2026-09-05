@@ -28,10 +28,12 @@ const onComing = ref<[string, string][]>([
   // ['intention', 'n. 打算，意图']
 ])
 
-const time = ref(60)
+const TOTAL_TIME = 60
+const time = ref(TOTAL_TIME)
 const counting = ref(false)
 const startingIndicator = ref()
 let intervalId: ReturnType<typeof setInterval> | undefined = undefined
+
 const hideStartIndicator = () => {
   setTimeout(() => {
     startingIndicator.value.style.opacity = 0
@@ -39,29 +41,38 @@ const hideStartIndicator = () => {
   }, 1000)
 }
 
+const stopCountDown = () => {
+  if (intervalId !== undefined) {
+    clearInterval(intervalId)
+    intervalId = undefined
+  }
+  counting.value = false
+}
+
+// 计时走完：显示 0 的同时立即弹成绩，不再多等一个 tick
+const finishCountDown = () => {
+  stopCountDown()
+  time.value = 0
+  input.value.contentEditable = false // 禁用输入
+  info()
+}
+
 // 加个锁，避免一轮测试之后，未进行初始化就开启新一轮
 const startCountDown = () => {
+  stopCountDown()
   counting.value = true
   hideStartIndicator()
   intervalId = setInterval(() => {
-    if (time.value > 1) {
-      time.value--
-    } else {
-      // 计时走完：显示 0 的同时立即弹成绩，不再多等一个 tick
-      time.value = 0
-      // html 不区分大小写，所以看到的是contenteditable， 实际上要赋值给 contentEditable 才会生效
-      // html 标签内的属性，应该会自动解析为对应的属性
-      input.value.contentEditable = false // 禁用输入
-      counting.value = false
-      info()
-      clearInterval(intervalId)
+    time.value--
+    if (time.value <= 0) {
+      finishCountDown()
     }
   }, 1000)
 }
 
 onUnmounted(() => {
   // 组件可能在计时中途被卸载（如路由切换），清理定时器避免空转泄漏
-  if (intervalId !== undefined) clearInterval(intervalId)
+  stopCountDown()
 })
 
 const words = computed(() => hasFinished.value.reduce((acc, cur) => acc + (cur.valid ? 1 : 0), 0))
@@ -73,13 +84,14 @@ const accuracy = computed(() =>
 )
 
 const resetAllData = () => {
+  stopCountDown()
   hasFinished.value = []
   currentTarget.value.data = ''
   currentTarget.value.trans = ''
   currentTarget.value.valid = true
   input.value.innerHTML = ''
   emit('changeData')
-  time.value = 60
+  time.value = TOTAL_TIME
   input.value.contentEditable = true
 }
 const input = ref()
@@ -208,7 +220,7 @@ watch(
   <div>
     <div class="scores">
       <div class="count-down">
-        <CountDownIcon :enable-animation="counting" />
+        <CountDownIcon :total-time="TOTAL_TIME" :current-time="time" :is-running="counting" />
         <div>{{ time }}</div>
         <div>{{ $t('unit.seconds') }}</div>
       </div>
