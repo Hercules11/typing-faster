@@ -16,6 +16,15 @@ export function setEndOfContenteditable(elem: Node) {
 }
 
 /**
+ * 读取 :root 上的 CSS 变量值（已去首尾空白）。
+ * base.css 是颜色的唯一事实源，JS 侧（antd token、图表配色）需要颜色时从这里读取；
+ * 变量不存在或测试环境没有样式表时返回空串，调用方应保留回退值
+ */
+export function getCSSVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/**
  * @param source 用户输入的字符串
  * @param target 要匹配的字符串
  * @return {isMatch} isMatch 是否匹配

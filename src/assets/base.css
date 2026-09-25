@@ -6,7 +6,6 @@
   --color-page-background: #f6f6f7;
   --color-surface: #ffffff;
   --color-surface-soft: #f8f8f8;
-  --color-surface-muted: #f2f2f2;
   --color-border: rgba(60, 60, 60, 0.12);
   --color-border-strong: rgba(60, 60, 60, 0.29);
   --color-heading: #2c3e50;
@@ -21,7 +20,14 @@
   --color-chart-tooltip-text: #ffffff;
   --background-art-opacity: 1;
   --background-art-filter: none;
-  --section-gap: 160px;
+
+  /* 语义色种子：useTheme 读取后经 antd 色彩算法生成完整色阶。
+     亮色模式用降饱和的柔和值，避免高饱和黄/绿/蓝在大面积白底上晃眼 */
+  --color-seed-primary: #e6c229;
+  --color-seed-success: #63b041;
+  --color-seed-error: #df6b70;
+  --color-seed-warning: #e0a52e;
+  --color-seed-info: #4d9fdc;
 }
 
 [data-theme='dark'] {
@@ -32,7 +38,6 @@
   --color-page-background: #111318;
   --color-surface: #1b1f27;
   --color-surface-soft: #242a33;
-  --color-surface-muted: #2b323d;
   --color-border: rgba(210, 218, 230, 0.14);
   --color-border-strong: rgba(210, 218, 230, 0.28);
   --color-heading: #eef1f5;
@@ -47,6 +52,13 @@
   --color-chart-tooltip-text: #eef1f5;
   --background-art-opacity: 0.12;
   --background-art-filter: grayscale(1) brightness(0.7);
+
+  /* 暗色模式沿用原种子：dark 算法本身会压暗压灰 */
+  --color-seed-primary: #ffd000;
+  --color-seed-success: #52c41a;
+  --color-seed-error: #df6b70;
+  --color-seed-warning: #faad14;
+  --color-seed-info: #1890ff;
 }
 
 *,

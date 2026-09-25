@@ -136,12 +136,12 @@ const handleConfirm = () => {
 
 .form-error {
   font-size: 0.85rem;
-  color: #ff4d4f;
+  color: var(--color-error);
 }
 
 .form-hint {
   font-size: 0.85rem;
-  color: #52c41a;
+  color: var(--color-success);
 }
 
 .form-footer {
@@ -151,11 +151,11 @@ const handleConfirm = () => {
   margin-top: 0.25rem;
 
   .icon-invalid {
-    color: #ff4d4f;
+    color: var(--color-error);
   }
 
   .icon-valid {
-    color: #52c41a;
+    color: var(--color-success);
   }
 }
 </style>

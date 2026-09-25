@@ -124,6 +124,7 @@ const confirmRemoveCustom = (cate: CustomCate) => {
     okButtonProps: { danger: true },
     centered: true,
     maskClosable: true,
+    wrapClassName: 'custom-dialogue',
     onOk() {
       removeCate(cate.value);
     }
@@ -273,7 +274,7 @@ const handleLinkClick = () => {
 }
 
 :global(.custom-delete:hover) {
-  color: #ff4d4f;
+  color: var(--color-error);
 }
 
 :global(.custom-add-label) {

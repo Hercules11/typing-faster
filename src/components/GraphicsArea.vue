@@ -40,25 +40,23 @@ import data from '../data/graphics.json';
 Chart.register(Colors, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 import ArrowIcon from './icons/ArrowIcon.vue';
+import { getCSSVar } from '@/utils';
 
 const isShow = ref(true);
 const area: Ref<HTMLCanvasElement | undefined> = ref();
 let chart: Chart | undefined;
 let themeObserver: MutationObserver | undefined;
 
-const getThemeColor = (name: string) =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-
 const syncChartTheme = () => {
   if (!chart) {
     return;
   }
 
-  chart.data.datasets[0]!.backgroundColor = getThemeColor('--color-accent');
-  chart.options.color = getThemeColor('--color-text-secondary');
-  chart.options.plugins!.tooltip!.backgroundColor = getThemeColor('--color-chart-tooltip-bg');
-  chart.options.plugins!.tooltip!.titleColor = getThemeColor('--color-chart-tooltip-text');
-  chart.options.plugins!.tooltip!.bodyColor = getThemeColor('--color-chart-tooltip-text');
+  chart.data.datasets[0]!.backgroundColor = getCSSVar('--color-accent');
+  chart.options.color = getCSSVar('--color-text-secondary');
+  chart.options.plugins!.tooltip!.backgroundColor = getCSSVar('--color-chart-tooltip-bg');
+  chart.options.plugins!.tooltip!.titleColor = getCSSVar('--color-chart-tooltip-text');
+  chart.options.plugins!.tooltip!.bodyColor = getCSSVar('--color-chart-tooltip-text');
   chart.update('none');
 };
 
@@ -69,16 +67,16 @@ onMounted(() => {
       animation: false,
       responsive: true, // 确保响应式
       maintainAspectRatio: false, // 不保持宽高比
-      color: getThemeColor('--color-text-secondary'),
+      color: getCSSVar('--color-text-secondary'),
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
           enabled: true,
-          backgroundColor: getThemeColor('--color-chart-tooltip-bg'),
-          titleColor: getThemeColor('--color-chart-tooltip-text'),
-          bodyColor: getThemeColor('--color-chart-tooltip-text'),
+          backgroundColor: getCSSVar('--color-chart-tooltip-bg'),
+          titleColor: getCSSVar('--color-chart-tooltip-text'),
+          bodyColor: getCSSVar('--color-chart-tooltip-text'),
           callbacks: {
             title: function (context) {
               // console.log(context)
@@ -121,7 +119,7 @@ onMounted(() => {
       datasets: [
         {
           label: 'count',
-          backgroundColor: getThemeColor('--color-accent'),
+          backgroundColor: getCSSVar('--color-accent'),
           data: Object.values(data)
         }
       ]
