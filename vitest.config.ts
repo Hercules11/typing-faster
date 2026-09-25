@@ -1,7 +1,7 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
 
-import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vitest/config'
+import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vitest/config';
 
 // 独立于 vite.config.ts：测试配置（环境、覆盖率阈值）不污染构建配置
 export default defineConfig({
@@ -36,11 +36,10 @@ export default defineConfig({
         'src/**/__tests__/**'
       ],
       thresholds: {
-        // vitest 2 不支持 per-glob 阈值；src/utils.ts 的实际覆盖率单独核对，
-        // 要求见 docs/TESTING.md
+        // 阈值只做防劣化底线（vitest 2 不支持 per-glob 阈值，不对单文件设指标）
         statements: 60,
         lines: 60
       }
     }
   }
-})
+});

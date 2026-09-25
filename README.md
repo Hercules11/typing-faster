@@ -1,55 +1,27 @@
 # typing-faster
 
+打字速度练习 Web 应用（类 monkeytype）：60 秒限时打单词，实时匹配校验，结束时统计
+WPM / 字符数 / 正确率。支持 7 个内置词库、自定义词库（粘贴纯英文文本自动提取单词）、
+中英文切换与亮/暗主题，附全球打字速度分布图表。
+
 ![alt text](demo.gif)
 ![alt text](image.png)
 
-This template should help get you started developing with Vue 3 in Vite.
+## 快速开始
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+环境要求：Node.js ≥ 20，pnpm ≥ 9。
 
 ```sh
-pnpm install
+pnpm install          # 安装依赖，pre-commit 钩子经 prepare 脚本自动生效
+pnpm dev              # 启动开发服务器（Vite HMR）
+pnpm check:all        # 提交前完整门禁：lint + 类型检查 + 单测 + 构建 + e2e
 ```
 
-### Compile and Hot-Reload for Development
+IDE 建议 [VSCode](https://code.visualstudio.com/) +
+[Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)（禁用 Vetur），
+TypeScript 才能正确理解 `.vue` 文件的类型。
 
-```sh
-pnpm dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-pnpm build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
-
-## 开发
-
-### 环境要求
-
-- Node.js ≥ 20，pnpm ≥ 9
-- 首次安装后钩子自动生效（`prepare` 脚本运行 `simple-git-hooks`）；
-  若未生效可手动执行 `npx simple-git-hooks`
-
-### 常用命令
+## 常用命令
 
 | 命令                            | 说明                                                     |
 | ------------------------------- | -------------------------------------------------------- |
@@ -60,20 +32,23 @@ pnpm lint
 | `pnpm test:watch`               | 监听模式运行测试                                         |
 | `pnpm test:coverage`            | 运行测试并生成覆盖率报告（`coverage/` 目录）             |
 | `pnpm test:e2e`                 | 运行 Playwright 端到端冒烟测试（自动构建并启动 preview） |
-| `pnpm lint` / `pnpm lint:check` | ESLint 检查（前者自动修复；后者 0 warning 才通过）       |
+| `pnpm lint:check` / `pnpm lint` | ESLint 校验（前者 0 warning 才通过；后者自动修复）       |
+| `pnpm check`                    | lint + 类型检查 + 单测 + 构建                            |
+| `pnpm check:all`                | `check` + e2e，提交前的完整门禁                          |
 | `pnpm format`                   | Prettier 格式化 `src/`                                   |
-| `pnpm typecheck`                | `vue-tsc` 类型检查                                       |
 
-### 提交前会发生什么
+## 提交
 
-pre-commit 钩子依次执行：`lint-staged`（对暂存文件跑 ESLint --fix + Prettier）→
-`pnpm test`（单元/组件测试）→ `pnpm build`（类型检查 + 构建）→ 自动 `git add dist/`
-（保留原有 GitHub Pages 部署方式）。跳过钩子：`git commit --no-verify` 或设置环境变量
-`SKIP_SIMPLE_GIT_HOOKS=1`。
+pre-commit 钩子依次执行：`lint-staged`（暂存文件 ESLint --fix + Prettier）→
+`pnpm test` → `pnpm build` → 自动 `git add dist/`（GitHub Pages 部署方式，
+dist 随提交入库）。提交信息遵循 Conventional Commits（`type(scope): 中文简述`），
+详见 [docs/贡献指南.md](docs/贡献指南.md)。
 
-### 测试与工程规范
+## 文档
 
-- 测试分层、覆盖率要求与 mock 规范见 [docs/TESTING.md](docs/TESTING.md)
-- 代码规范、提交规范与目录约定见 [docs/ENGINEERING.md](docs/ENGINEERING.md)
-- 测试过程中发现并修复的 bug 记录见 [docs/BUGFIXES.md](docs/BUGFIXES.md)
-- CI workflow 模板（未启用，按需复制到 `.github/workflows/`）见 [docs/ci/test.yml](docs/ci/test.yml)
+| 文档                                 | 内容                                     |
+| ------------------------------------ | ---------------------------------------- |
+| [docs/开发指南.md](docs/开发指南.md) | 架构总览、核心数据流、关键决策记录       |
+| [docs/贡献指南.md](docs/贡献指南.md) | 测试规范、Lint/TS 规则要点、提交与 CI    |
+| [docs/现状.md](docs/现状.md)         | 项目现状盘点、历史问题修复记录、遗留待办 |
+| [docs/ci/test.yml](docs/ci/test.yml) | GitHub Actions 模板（未启用，按需复制）  |

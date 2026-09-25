@@ -1,144 +1,3 @@
-<script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-import { BulbFilled, BulbOutlined, GithubFilled } from '@ant-design/icons-vue'
-import TypingArea from './components/TypingArea.vue'
-import GraphicsArea from './components/GraphicsArea.vue'
-import { computed, createVNode, onMounted, ref, watch } from 'vue'
-import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
-import { loadWordsData, replaceBlankWord } from './utils'
-import Modal from 'ant-design-vue/es/modal/Modal'
-import antTheme from 'ant-design-vue/es/theme'
-
-const { t, locale } = useI18n()
-type ThemeMode = 'light' | 'dark'
-
-const showTrans = ref(true)
-watch(showTrans, () => {
-  locale.value = showTrans.value ? 'zh' : 'en'
-})
-
-const getInitialTheme = (): ThemeMode => {
-  const storedTheme = localStorage.getItem('typing-faster-theme')
-  if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme
-
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-const themeMode = ref<ThemeMode>(getInitialTheme())
-const isDarkTheme = computed(() => themeMode.value === 'dark')
-const appTheme = computed(() => ({
-  algorithm: isDarkTheme.value ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-  token: {
-    colorPrimary: '#ffd000',
-    colorTextLightSolid: '#333333',
-    borderRadius: 8
-  }
-}))
-const toggleTheme = () => {
-  themeMode.value = isDarkTheme.value ? 'light' : 'dark'
-}
-watch(
-  themeMode,
-  () => {
-    document.documentElement.dataset.theme = themeMode.value
-    localStorage.setItem('typing-faster-theme', themeMode.value)
-  },
-  { immediate: true }
-)
-
-const currentSelect = ref('junior-high-school')
-const cates = ref([
-  {
-    label: t('cates.junior-high-school'),
-    value: 'junior-high-school',
-    length: ''
-  },
-  {
-    label: t('cates.senior-high-school'),
-    value: 'senior-high-school',
-    length: ''
-  },
-  {
-    label: t('cates.cet-4'),
-    value: 'cet-4',
-    length: ''
-  },
-  {
-    label: t('cates.cet-6'),
-    value: 'cet-6',
-    length: ''
-  },
-  {
-    label: t('cates.graduate-record-exam'),
-    value: 'graduate-record-exam',
-    length: ''
-  },
-  {
-    label: t('cates.toefl'),
-    value: 'toefl',
-    length: ''
-  },
-  {
-    label: t('cates.sat'),
-    value: 'sat',
-    length: ''
-  }
-])
-watch(locale, () => {
-  cates.value.forEach((item) => {
-    item.label = t('cates.' + item.value)
-  })
-})
-
-const wordsData = ref<[string, string][]>([])
-
-const isDisable = ref(false)
-const disableSelection = (payload: boolean) => {
-  isDisable.value = payload
-}
-const shuffleData = () => {
-  injectData()
-}
-const injectData = async () => {
-  const words = await loadWordsData(currentSelect.value)
-  for (let item of cates.value) {
-    if (item.value === currentSelect.value) {
-      item.length = words.default.length
-      break
-    }
-  }
-  const random = Math.round(Math.random() * (words.default.length - 180))
-  // console.log(words)
-  // console.log(random)
-  wordsData.value.splice(0, wordsData.value.length) // 响应式丢失
-  wordsData.value = words.default.slice(random, random + 180)
-  // 去除可能的空格
-  wordsData.value.forEach((item) => {
-    item[0] = replaceBlankWord(item[0])
-  })
-  // console.log(wordsData.value)
-}
-onMounted(injectData)
-watch(currentSelect, injectData)
-
-const handleLinkClick = () => {
-  Modal.confirm({
-    title: t('confirm'),
-    icon: createVNode(ExclamationCircleOutlined),
-    content: t('jump-tip'),
-    okText: t('ensure'),
-    cancelText: t('cancel'),
-    centered: true,
-    maskClosable: true,
-    wrapClassName: 'custom-dialogue',
-    onOk() {
-      // console.log('跳转')
-      window.open('https://github.com/Hercules11/typing-faster', '_blank', 'noopener,noreferrer')
-    }
-  })
-}
-</script>
-
 <template>
   <a-config-provider :theme="appTheme">
     <div class="background">
@@ -156,14 +15,35 @@ const handleLinkClick = () => {
         <div class="chinese">
           <a-switch
             v-model:checked="showTrans"
-            checked-children="中"
-            un-checked-children="En"
+            checked-children="En"
+            un-checked-children="中"
           ></a-switch>
         </div>
         &nbsp;
-        <a-select v-model:value="currentSelect" style="width: 200px" :disabled="isDisable">
+        <a-select
+          :value="currentSelect"
+          style="width: 200px"
+          :disabled="isDisable"
+          @change="onSelectChange"
+        >
           <a-select-option v-for="item in cates" :value="item.value" :key="item.value">
             {{ item.label + (item.length ? `\u00A0(${item.length})` : '') }}
+          </a-select-option>
+          <a-select-option v-for="item in customCates" :value="item.value" :key="item.value">
+            <span class="custom-option-label">
+              {{ item.title + `\u00A0(${item.length})` }}
+              <CloseCircleFilled
+                class="custom-delete"
+                :title="t('custom.delete')"
+                @click.stop="confirmRemoveCustom(item)"
+              />
+            </span>
+          </a-select-option>
+          <a-select-option :value="CUSTOM_ADD_VALUE" :key="CUSTOM_ADD_VALUE">
+            <span class="custom-add-label">
+              <PlusCircleOutlined class="custom-add-icon" />
+              {{ t('custom.add-option') }}
+            </span>
           </a-select-option>
         </a-select>
       </div>
@@ -173,15 +53,106 @@ const handleLinkClick = () => {
       </div>
 
       <div class="container">
-        <TypingArea :data="wordsData" @is-typing="disableSelection" @change-data="shuffleData" />
+        <TypingArea :data="wordsData" @is-typing="disableSelection" @change-data="shuffleWords" />
         <GraphicsArea />
       </div>
       <div class="feedback" @click="handleLinkClick">
         <GithubFilled />
       </div>
     </div>
+    <CustomWordModal v-model:open="customModalOpen" @saved="addCustomCate" />
   </a-config-provider>
 </template>
+
+<script setup lang="ts">
+import { createVNode, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import {
+  BulbFilled,
+  BulbOutlined,
+  CloseCircleFilled,
+  ExclamationCircleOutlined,
+  GithubFilled,
+  PlusCircleOutlined
+} from '@ant-design/icons-vue';
+import TypingArea from './components/TypingArea.vue';
+import GraphicsArea from './components/GraphicsArea.vue';
+import CustomWordModal from './components/CustomWordModal.vue';
+import Modal from 'ant-design-vue/es/modal/Modal';
+import { CUSTOM_ADD_VALUE } from './utils';
+import type { CustomCate } from './types';
+import { useTheme } from './composables/useTheme';
+import { useLocale } from './composables/useLocale';
+import { useWordBank } from './composables/useWordBank';
+
+const { t } = useI18n();
+
+// 主题 / 语言 / 词库三大领域的状态与逻辑分别收在各自 composable 中
+const { isDarkTheme, appTheme, toggleTheme } = useTheme();
+const { showTrans } = useLocale();
+const {
+  currentSelect,
+  cates,
+  customCates,
+  wordsData,
+  selectCate,
+  shuffleWords,
+  addCustomCate,
+  removeCate
+} = useWordBank();
+
+// ---------- 自定义词库 UI ----------
+const customModalOpen = ref(false);
+
+/**
+ * 下拉受控：选中「新增自定义词库」入口时只弹窗，不切换词库
+ */
+const onSelectChange = (value: string) => {
+  if (value === CUSTOM_ADD_VALUE) {
+    customModalOpen.value = true;
+    return;
+  }
+  selectCate(value);
+};
+
+const confirmRemoveCustom = (cate: CustomCate) => {
+  Modal.confirm({
+    title: t('custom.delete-confirm', { title: cate.title }),
+    icon: createVNode(ExclamationCircleOutlined),
+    okText: t('ensure'),
+    cancelText: t('cancel'),
+    okButtonProps: { danger: true },
+    centered: true,
+    maskClosable: true,
+    onOk() {
+      removeCate(cate.value);
+    }
+  });
+};
+
+// ---------- 打字状态（是否禁用词库下拉） ----------
+const isDisable = ref(false);
+const disableSelection = (payload: boolean) => {
+  isDisable.value = payload;
+};
+
+const handleLinkClick = () => {
+  Modal.confirm({
+    title: t('confirm'),
+    icon: createVNode(ExclamationCircleOutlined),
+    content: t('jump-tip'),
+    okText: t('ensure'),
+    cancelText: t('cancel'),
+    centered: true,
+    maskClosable: true,
+    wrapClassName: 'custom-dialogue',
+    onOk() {
+      // console.log('跳转')
+      window.open('https://github.com/Hercules11/typing-faster', '_blank', 'noopener,noreferrer');
+    }
+  });
+};
+</script>
 
 <style scoped lang="less">
 .feedback {
@@ -284,6 +255,32 @@ const handleLinkClick = () => {
       top: 0.3rem;
     }
   }
+}
+
+// 下拉面板默认挂载在 body 下，作用域样式无法命中，这几个类名仅本项目使用，走全局样式
+:global(.custom-option-label) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+:global(.custom-delete) {
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  color: var(--color-text-secondary);
+  transition: color 0.3s;
+}
+
+:global(.custom-delete:hover) {
+  color: #ff4d4f;
+}
+
+:global(.custom-add-label) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-text-secondary);
 }
 .container {
   margin: 0 auto;

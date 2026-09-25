@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps(['direction'])
+const props = defineProps<{ direction?: boolean }>();
 </script>
 
 <style lang="less" scoped>

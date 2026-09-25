@@ -1,221 +1,3 @@
-<script setup lang="ts">
-import { computed, h, onUnmounted, ref, watch, type Ref } from 'vue'
-import { type Word } from '@/types'
-import { matchSourceAndTarget, omitBlankLetter, regexp } from '@/utils'
-import CountDownIcon from './icons/CountDownIcon.vue'
-import Modal from 'ant-design-vue/es/modal/Modal'
-import { useI18n } from 'vue-i18n'
-const props = defineProps(['data'])
-
-const { t, locale } = useI18n()
-const emit = defineEmits(['isTyping', 'changeData'])
-const hasFinished: Ref<Word[]> = ref([
-  // {
-  //   data: 'equivalence',
-  //   trans: '"n. 等值，相等"',
-  //   valid: true
-  // },
-  // {
-  //   data: 'negotiate',
-  //   trans: 'n. 等值，相等',
-  //   valid: true
-  // }
-])
-
-const onComing = ref<[string, string][]>([
-  // ['access', 'v. 获取 n. 接近，入口'],
-  // ['project', 'n. 工程；课题、作业'],
-  // ['intention', 'n. 打算，意图']
-])
-
-const TOTAL_TIME = 60
-const time = ref(TOTAL_TIME)
-const counting = ref(false)
-const startingIndicator = ref()
-let intervalId: ReturnType<typeof setInterval> | undefined = undefined
-
-const hideStartIndicator = () => {
-  setTimeout(() => {
-    startingIndicator.value.style.opacity = 0
-    startingIndicator.value.style.transition = 'all 1s ease-out'
-  }, 1000)
-}
-
-const stopCountDown = () => {
-  if (intervalId !== undefined) {
-    clearInterval(intervalId)
-    intervalId = undefined
-  }
-  counting.value = false
-}
-
-// 计时走完：显示 0 的同时立即弹成绩，不再多等一个 tick
-const finishCountDown = () => {
-  stopCountDown()
-  time.value = 0
-  input.value.contentEditable = false // 禁用输入
-  info()
-}
-
-// 加个锁，避免一轮测试之后，未进行初始化就开启新一轮
-const startCountDown = () => {
-  stopCountDown()
-  counting.value = true
-  hideStartIndicator()
-  intervalId = setInterval(() => {
-    time.value--
-    if (time.value <= 0) {
-      finishCountDown()
-    }
-  }, 1000)
-}
-
-onUnmounted(() => {
-  // 组件可能在计时中途被卸载（如路由切换），清理定时器避免空转泄漏
-  stopCountDown()
-})
-
-const words = computed(() => hasFinished.value.reduce((acc, cur) => acc + (cur.valid ? 1 : 0), 0))
-const chars = computed(() =>
-  hasFinished.value.reduce((acc, cur) => acc + (cur.valid ? cur.data.length : 0), 0)
-)
-const accuracy = computed(() =>
-  hasFinished.value.length ? Math.round((words.value / hasFinished.value.length) * 100) : 0
-)
-
-const resetAllData = () => {
-  stopCountDown()
-  hasFinished.value = []
-  currentTarget.value.data = ''
-  currentTarget.value.trans = ''
-  currentTarget.value.valid = true
-  input.value.innerHTML = ''
-  emit('changeData')
-  time.value = TOTAL_TIME
-  input.value.contentEditable = true
-}
-const input = ref()
-const focusInput = () => {
-  input.value.focus()
-}
-
-const changeCurrentWord = (event: any) => {
-  let isFinished = matchSourceAndTarget(
-    omitBlankLetter(event.target.textContent),
-    currentTarget.value.data
-  )
-  hasFinished.value.push({
-    data: omitBlankLetter(event.target.textContent),
-    trans: currentTarget.value.trans,
-    valid: currentTarget.value.valid ? isFinished.full : false
-  })
-  onComing.value.shift()
-  currentTarget.value.data = onComing.value[0][0]
-  currentTarget.value.trans = onComing.value[0][1]
-  currentTarget.value.valid = true
-  event.target.textContent = ''
-}
-const currentTarget = ref({
-  data: '',
-  trans: '',
-  valid: true
-}) // 存储当前要输入的单词
-const initCurrentTargetData = (hasDataAndUpdate: boolean) => {
-  if (hasDataAndUpdate || !currentTarget.value.data) {
-    currentTarget.value.data = onComing.value[0][0]
-    currentTarget.value.trans = onComing.value[0][1]
-    currentTarget.value.valid = true
-  }
-}
-const updateContent = (event: any) => {
-  // console.log(event)
-  if (!counting.value) startCountDown()
-  initCurrentTargetData(false)
-  if (event.inputType === 'insertParagraph') {
-    if (event.target.textContent === '') {
-      // 涉及到 br
-      event.target.innerHTML = ''
-      return
-    } else {
-      // 换词
-      changeCurrentWord(event)
-    }
-  }
-  // 空格匹配不一定成功，会出问题,采用正则匹配
-  if (regexp.test(event.data)) {
-    if (event.target.textContent.length === 1) {
-      event.target.textContent = ''
-      return
-    } else {
-      // 换词
-      // 检查是否完成
-      changeCurrentWord(event)
-    }
-  } else {
-    //用拟合的逻辑去做匹配，
-    let isFinished = matchSourceAndTarget(event.target.textContent.trim(), currentTarget.value.data)
-    currentTarget.value.valid = isFinished.match
-    if (isFinished.match) {
-      currentTarget.value.valid = true
-      onComing.value[0][0] = currentTarget.value.data.slice(isFinished.pos)
-    } else {
-      currentTarget.value.valid = false
-    }
-  }
-
-  // console.log(currentTarget.value)
-}
-
-const info = () => {
-  Modal.success({
-    title: t('modal-title'),
-    content: h('div', {}, [
-      h('p', t('prompts1', { words: words.value, chars: chars.value })),
-      h(
-        'p',
-        accuracy.value === 100
-          ? t('prompts3', { accuracy: accuracy.value })
-          : t('prompts2', { accuracy: accuracy.value })
-      )
-    ]),
-    centered: true,
-    wrapClassName: 'custom-dialogue',
-    autoFocusButton: null, // 禁止弹窗后，输入空格就重新启动测试
-    // maskClosable: true,
-    onOk() {
-      resetAllData()
-      // console.log('ok')
-    },
-    onCancel() {
-      resetAllData()
-    }
-  })
-}
-
-watch(
-  () => props.data,
-  // 默认情况下，Vue 只会在引用发生变化时触发回调
-  () => {
-    // console.log(props.data)
-    onComing.value.splice(0, onComing.value.length)
-    // NOTE: 数据引用bug, 因为改了数组内部数组数据,导致 props 修改, 进而引发当前组件数据 bug
-    // 修复：拷贝词条。打字时会把当前词裁剪成剩余后缀（onComing[0][0] = ...），
-    // 若按引用共享，会把父组件/缓存模块里的原始词库数据一并截断
-    onComing.value.push(
-      ...(props.data as [string, string][]).map((word) => [...word] as [string, string])
-    )
-    initCurrentTargetData(true)
-  }
-)
-watch(
-  () => counting.value,
-  () => {
-    // console.log('start typing')
-    emit('isTyping', counting.value)
-  }
-)
-</script>
-
 <template>
   <div>
     <div class="scores">
@@ -269,6 +51,88 @@ watch(
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { h, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import Modal from 'ant-design-vue/es/modal/Modal';
+import CountDownIcon from './icons/CountDownIcon.vue';
+import { useCountdown } from '@/composables/useCountdown';
+import { useTypingInput } from '@/composables/useTypingInput';
+
+const props = defineProps<{ data: [string, string][] }>();
+
+const { t, locale } = useI18n();
+const emit = defineEmits<{ isTyping: [counting: boolean]; changeData: [] }>();
+
+const input = ref<HTMLElement>();
+const startingIndicator = ref<HTMLElement>();
+
+const hideStartIndicator = () => {
+  setTimeout(() => {
+    startingIndicator.value!.style.opacity = '0';
+    startingIndicator.value!.style.transition = 'all 1s ease-out';
+  }, 1000);
+};
+
+const countdown = useCountdown({
+  totalTime: 60,
+  onFinish() {
+    input.value!.contentEditable = 'false'; // 禁用输入
+    info();
+  }
+});
+
+const { hasFinished, onComing, currentTarget, words, chars, accuracy, updateContent, resetRound } =
+  useTypingInput({
+    data: () => props.data,
+    countdown,
+    onFirstInput: hideStartIndicator
+  });
+
+const focusInput = () => {
+  input.value!.focus();
+};
+
+const info = () => {
+  Modal.success({
+    title: t('modal-title'),
+    content: h('div', {}, [
+      h('p', t('prompts1', { words: words.value, chars: chars.value })),
+      h(
+        'p',
+        accuracy.value === 100
+          ? t('prompts3', { accuracy: accuracy.value })
+          : t('prompts2', { accuracy: accuracy.value })
+      )
+    ]),
+    centered: true,
+    wrapClassName: 'custom-dialogue',
+    autoFocusButton: null, // 禁止弹窗后，输入空格就重新启动测试
+    // maskClosable: true,
+    onOk() {
+      resetAllData();
+    },
+    onCancel() {
+      resetAllData();
+    }
+  });
+};
+
+const resetAllData = () => {
+  resetRound();
+  input.value!.innerHTML = '';
+  emit('changeData');
+  input.value!.contentEditable = 'true';
+};
+
+watch(countdown.counting, (counting) => {
+  emit('isTyping', counting);
+});
+
+// 模板需要的倒计时状态（与 countdown 内部同一份响应式引用）
+const { time, counting, totalTime: TOTAL_TIME } = countdown;
+</script>
 
 <style scoped lang="less">
 .error {

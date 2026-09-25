@@ -32,48 +32,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = withDefaults(
   defineProps<{
-    totalTime?: number
-    currentTime?: number
-    isRunning?: boolean
+    totalTime?: number;
+    currentTime?: number;
+    isRunning?: boolean;
     // 兼容旧属性名 enableAnimation
-    enableAnimation?: boolean
+    enableAnimation?: boolean;
   }>(),
   {
     totalTime: 60,
     currentTime: 60,
-    isRunning: false,
-    enableAnimation: undefined
+    isRunning: false
   }
-)
+);
 
 // 2 * π * r (r=53) ≈ 333.01px
-const RADIUS = 53
-const TOTAL_PERIMETER = Math.round(2 * Math.PI * RADIUS) // 333
-
-// 是否正在运行：优先使用 isRunning，若传了旧的 enableAnimation 也无缝兼容
-const isRunning = computed(() => {
-  if (props.enableAnimation !== undefined) {
-    return props.enableAnimation
-  }
-  return props.isRunning
-})
+const RADIUS = 53;
+const TOTAL_PERIMETER = Math.round(2 * Math.PI * RADIUS); // 333
 
 // 进度百分比：从 0 (刚开始) 到 1 (走完)
 const progress = computed(() => {
-  if (props.totalTime <= 0) return 1
-  const elapsed = props.totalTime - props.currentTime
-  return Math.max(0, Math.min(1, elapsed / props.totalTime))
-})
+  if (props.totalTime <= 0) {
+    return 1;
+  }
+  const elapsed = props.totalTime - props.currentTime;
+  return Math.max(0, Math.min(1, elapsed / props.totalTime));
+});
 
 // 圆环偏移量：从 0px 递增至 TOTAL_PERIMETER px
-const dashOffset = computed(() => progress.value * TOTAL_PERIMETER)
+const dashOffset = computed(() => progress.value * TOTAL_PERIMETER);
 
 // 小圆点旋转角度：起点 450deg，顺时针旋转一圈（450deg -> 90deg）
-const dotRotation = computed(() => 450 - progress.value * 360)
+const dotRotation = computed(() => 450 - progress.value * 360);
 </script>
 
 <style scoped></style>

@@ -1,5 +1,29 @@
+<template>
+  <div>
+    <!-- 根元素的样式会被父级组件影响 -->
+    <!-- 子组件的根节点会同时被父组件的作用域样式和子组件的作用域样式影响。这样设计是为了让父组件可以从布局的角度出发，调整其子组件根元素的样式。 -->
+    <div class="container">
+      <div class="title" @click="isShow = !isShow">
+        <span>{{ isShow ? $t('hide') : $t('show') }}</span>
+        <span><ArrowIcon :direction="isShow" /></span>
+      </div>
+      <div class="content" v-show="isShow">
+        <div class="white-bg">
+          <div class="graphics-title">
+            <h1>{{ $t('scores') }}</h1>
+            <h2>{{ $t('chart') }} ({{ $t('unit.wpm') }})</h2>
+          </div>
+          <div class="graphics-area">
+            <canvas ref="area" id="global-chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, type Ref } from 'vue'
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 import {
   Chart,
   Colors,
@@ -9,32 +33,34 @@ import {
   BarElement,
   Legend,
   Tooltip
-} from 'chart.js'
-import data from '../data/graphics.json'
+} from 'chart.js';
+import data from '../data/graphics.json';
 
 // 缺了 tooltip 没注册，居然不报错提示
-Chart.register(Colors, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip)
+Chart.register(Colors, BarController, BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
-import ArrowIcon from './icons/ArrowIcon.vue'
+import ArrowIcon from './icons/ArrowIcon.vue';
 
-const isShow = ref(true)
-const area: Ref<HTMLCanvasElement | undefined> = ref()
-let chart: Chart | undefined
-let themeObserver: MutationObserver | undefined
+const isShow = ref(true);
+const area: Ref<HTMLCanvasElement | undefined> = ref();
+let chart: Chart | undefined;
+let themeObserver: MutationObserver | undefined;
 
 const getThemeColor = (name: string) =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 const syncChartTheme = () => {
-  if (!chart) return
+  if (!chart) {
+    return;
+  }
 
-  chart.data.datasets[0].backgroundColor = getThemeColor('--color-accent')
-  chart.options.color = getThemeColor('--color-text-secondary')
-  chart.options.plugins!.tooltip!.backgroundColor = getThemeColor('--color-chart-tooltip-bg')
-  chart.options.plugins!.tooltip!.titleColor = getThemeColor('--color-chart-tooltip-text')
-  chart.options.plugins!.tooltip!.bodyColor = getThemeColor('--color-chart-tooltip-text')
-  chart.update('none')
-}
+  chart.data.datasets[0]!.backgroundColor = getThemeColor('--color-accent');
+  chart.options.color = getThemeColor('--color-text-secondary');
+  chart.options.plugins!.tooltip!.backgroundColor = getThemeColor('--color-chart-tooltip-bg');
+  chart.options.plugins!.tooltip!.titleColor = getThemeColor('--color-chart-tooltip-text');
+  chart.options.plugins!.tooltip!.bodyColor = getThemeColor('--color-chart-tooltip-text');
+  chart.update('none');
+};
 
 onMounted(() => {
   chart = new Chart(area.value?.getContext('2d')!, {
@@ -56,12 +82,12 @@ onMounted(() => {
           callbacks: {
             title: function (context) {
               // console.log(context)
-              let val = context[0].raw
-              return `${val} people write`
+              const val = context[0]!.raw;
+              return `${val} people write`;
             },
             label: function (context) {
-              let val = context.label
-              return `${val} words per minute`
+              let val = context.label;
+              return `${val} words per minute`;
             }
           }
         }
@@ -75,7 +101,7 @@ onMounted(() => {
             maxRotation: 0,
             minRotation: 0,
             callback: function (value, index) {
-              return index % 10 === 0 ? this.getLabelForValue(value as number) : ''
+              return index % 10 === 0 ? this.getLabelForValue(value as number) : '';
             }
           },
           grid: {
@@ -100,44 +126,20 @@ onMounted(() => {
         }
       ]
     }
-  })
+  });
 
-  themeObserver = new MutationObserver(syncChartTheme)
+  themeObserver = new MutationObserver(syncChartTheme);
   themeObserver.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['data-theme']
-  })
-})
+  });
+});
 
 onUnmounted(() => {
-  themeObserver?.disconnect()
-  chart?.destroy()
-})
+  themeObserver?.disconnect();
+  chart?.destroy();
+});
 </script>
-
-<template>
-  <div>
-    <!-- 根元素的样式会被父级组件影响 -->
-    <!-- 子组件的根节点会同时被父组件的作用域样式和子组件的作用域样式影响。这样设计是为了让父组件可以从布局的角度出发，调整其子组件根元素的样式。 -->
-    <div class="container">
-      <div class="title" @click="isShow = !isShow">
-        <span>{{ isShow ? $t('hide') : $t('show') }}</span>
-        <span><ArrowIcon :direction="isShow" /></span>
-      </div>
-      <div class="content" v-show="isShow">
-        <div class="white-bg">
-          <div class="graphics-title">
-            <h1>{{ $t('scores') }}</h1>
-            <h2>{{ $t('chart') }} ({{ $t('unit.wpm') }})</h2>
-          </div>
-          <div class="graphics-area">
-            <canvas ref="area" id="global-chart"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 
 <style scoped lang="less">
 .container {

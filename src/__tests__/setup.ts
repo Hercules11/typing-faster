@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/vitest'
+import '@testing-library/jest-dom/vitest';
 
 // jsdom 未实现 matchMedia，App.vue 初始化主题时依赖它
 if (!window.matchMedia) {
@@ -12,5 +12,5 @@ if (!window.matchMedia) {
       addEventListener: () => {},
       removeEventListener: () => {},
       dispatchEvent: () => false
-    }) as MediaQueryList
+    }) as MediaQueryList;
 }
