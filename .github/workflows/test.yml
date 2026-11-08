@@ -1,8 +1,7 @@
-# CI 模板（未启用）
+# CI：push / PR 到 main 时跑 lint、格式、单测、类型检查、构建与 e2e
 #
-# 启用方式：把本文件复制到 .github/workflows/test.yml 即可。
 # 说明：
-# - 本项目把 dist 提交入库作为 GitHub Pages 部署方式，CI 只做校验，不推送 dist。
+# - Pages 部署由 static.yml 在 CI 现场构建 dist 完成，本 workflow 只做质量校验。
 # - E2E 使用生产构建 + vite preview，Playwright 在 CI 上自动安装浏览器。
 
 name: Test & Lint
@@ -20,8 +19,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - uses: actions/setup-node@v4
         with:
@@ -48,8 +45,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - uses: actions/setup-node@v4
         with:

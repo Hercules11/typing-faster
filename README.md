@@ -39,9 +39,10 @@ TypeScript 才能正确理解 `.vue` 文件的类型。
 
 ## 提交
 
-pre-commit 钩子依次执行：`lint-staged`（暂存文件 ESLint --fix + Prettier）→
-`pnpm test` → `pnpm build` → 自动 `git add dist/`（GitHub Pages 部署方式，
-dist 随提交入库）。提交信息遵循 Conventional Commits（`type(scope): 中文简述`），
+pre-commit 钩子执行 `lint-staged`（暂存文件 ESLint --fix + Prettier）。
+lint / 测试 / 构建由 `.github/workflows/test.yml` 在 push 与 PR 时统一校验，
+`dist/` 构建产物不入库——部署由 `.github/workflows/static.yml` 在 CI 现场构建并
+发布到 GitHub Pages。提交信息遵循 Conventional Commits（`type(scope): 中文简述`），
 详见 [docs/贡献指南.md](docs/贡献指南.md)。
 
 ## 文档
@@ -51,4 +52,3 @@ dist 随提交入库）。提交信息遵循 Conventional Commits（`type(scope)
 | [docs/开发指南.md](docs/开发指南.md) | 架构总览、核心数据流、关键决策记录       |
 | [docs/贡献指南.md](docs/贡献指南.md) | 测试规范、Lint/TS 规则要点、提交与 CI    |
 | [docs/现状.md](docs/现状.md)         | 项目现状盘点、历史问题修复记录、遗留待办 |
-| [docs/ci/test.yml](docs/ci/test.yml) | GitHub Actions 模板（未启用，按需复制）  |

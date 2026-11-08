@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.19.0",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -64,7 +65,7 @@
     "vue-tsc": "^2.0.21"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged && pnpm test && pnpm build && echo '✅ lint+测试+编译通过！已自动添加 dist' && git add dist/"
+    "pre-commit": "pnpm lint-staged"
   },
   "prepare": "simple-git-hooks"
 }
